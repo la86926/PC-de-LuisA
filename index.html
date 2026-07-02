@@ -3928,8 +3928,20 @@ async function compartirLogro(){
     ctx.fillText(Math.round(solved.size/PUZZLES.length*100)+'% del libro · racha actual: '+lastStreak,W/2,760);
     ctx.fillStyle='#cf4d2e'; ctx.font='italic 42px Georgia';
     ctx.fillText('«Un error enseña más que cien victorias.»',W/2,900);
+
+
+
+    // % NUEVO: dentro del APK, guardo la tarjeta en la galería con el puente
+    if(window.PuenteAndroid && PuenteAndroid.guardarImagen){
+      const b64=cv.toDataURL('image/png').split(',')[1];
+      PuenteAndroid.guardarImagen(b64,'logro-woodpecker.png');
+      setStatus('ok','Tarjeta guardada en tu galería (Pictures/PCdeLuisA).');
+      return;
+    }
     const blob=await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('sin blob')),'image/png'));
     const archivo=new File([blob],'logro-woodpecker.png',{type:'image/png'});
+
+    
     if(navigator.share && (!navigator.canShare || navigator.canShare({files:[archivo]}))){
       await navigator.share({files:[archivo],title:'Mi progreso',text:'Mi progreso en El Método Pájaro Carpintero ♟️'});
     }else{
