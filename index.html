@@ -849,7 +849,7 @@ footer a{color:var(--muted)}
   <button class="btn" id="b-import">Importar PGN/FEN</button>
   <button class="btn" id="b-clear">Borrar</button>
   <button class="btn" id="b-hist-open">Historial</button>
-  <button class="btn" id="b-tarjeta">🏆 Compartir logro :)</button>   <!-- % NUEVO -->
+  <button class="btn" id="b-tarjeta">🏆 Compartir logro</button>   <!-- % NUEVO -->
 </div>
     </div>
     
@@ -3915,7 +3915,7 @@ async function compartirLogro(){
     ctx.fillStyle='#98a39a'; ctx.font='40px Georgia';
     ctx.fillText(Math.round(solved.size/PUZZLES.length*100)+'% del libro · racha actual: '+lastStreak,W/2,760);
     ctx.fillStyle='#cf4d2e'; ctx.font='italic 42px Georgia';
-    ctx.fillText('«Porque eres el mejor»',W/2,900);
+    ctx.fillText('«Un error enseña más que cien victorias.»',W/2,900);
     const blob=await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('sin blob')),'image/png'));
     const archivo=new File([blob],'logro-woodpecker.png',{type:'image/png'});
     if(navigator.share && (!navigator.canShare || navigator.canShare({files:[archivo]}))){
