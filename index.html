@@ -22,7 +22,22 @@
 /* NUEVA VARIABLE: Cambia este valor (0.7rem, 11px, 75%, etc.) para ajustar el tamaño fácilmente */
   --txt-amigo-size: 0.72rem;
 }
-*{box-sizing:border-box}
+
+
+
+
+
+*{box-sizing:border-box;
+  -webkit-user-select:none;   /* % NUEVO: nada de texto seleccionable */
+  user-select:none;           /* % NUEVO */
+  -webkit-touch-callout:none; /* % NUEVO: sin menú de "copiar" al mantener presionado (iPhone) */
+}
+html,body{touch-action:pan-x pan-y}  /* % NUEVO: permite scroll pero bloquea zoom por doble toque y pellizco */
+
+
+
+
+
 html,body{margin:0;padding:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);
   -webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
@@ -4349,7 +4364,15 @@ document.addEventListener('keydown',e=>{
 
 /* ---------- init ---------- */
 buildList();
-if(navigator.storage && navigator.storage.persist){ navigator.storage.persist(); }   // % NUEVO: pide al navegador NO borrar los datos automáticamente
+if(navigator.storage && navigator.storage.persist){ navigator.storage.persist(); }
+// % NUEVO: bloqueo total de zoom por gestos (Safari/iOS ignora el meta viewport)
+document.addEventListener('gesturestart', e=>e.preventDefault());
+document.addEventListener('dblclick', e=>e.preventDefault());
+
+
+
+
+
 $('c-all').textContent = PUZZLES.length;
 load(curr());
 renderProgress();
