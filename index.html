@@ -595,7 +595,7 @@ footer a{color:var(--muted)}
 .confirm-bg.open{display:flex}
 .confirm-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;
   width:100%;max-width:360px;padding:1.2rem;box-shadow:0 20px 50px -15px #000c;text-align:center}
-.confirm-box p{margin:0 0 1.1rem;font-size:.95rem;color:var(--ink);line-height:1.5}
+.confirm-box p{margin:0 0 1.1rem;font-size:.95rem;color:var(--ink);line-height:1.5;white-space:pre-line}   /* % CAMBIO: respeta los saltos de línea del mensaje */
 .confirm-acts{display:flex;gap:.6rem}
 .confirm-acts .btn{flex:1;justify-content:center;padding:.7rem}
 
@@ -3984,7 +3984,7 @@ function descargarArchivo(texto, nombre){
   // % NUEVO: dentro del APK, uso el puente Android (el WebView no descarga blobs)
   if(window.PuenteAndroid && PuenteAndroid.guardarArchivo){
     PuenteAndroid.guardarArchivo(nombre, texto);
-    avisarVentana('✅ Archivo guardado en Descargas/PCdeLuisA: '+nombre);
+    avisarVentana('✅ Archivo guardado en Descargas/PCdeLuisA\n'+nombre);   // % CAMBIO: \n = salto de línea
     return;
   }
   const blob=new Blob([texto],{type:'text/plain;charset=utf-8'});
@@ -4352,10 +4352,18 @@ $('b-export').onclick=()=>{
 $('b-export-fen').onclick=()=>{
   if(!state.game)return;
 
+  
+
+
+
   descargarArchivo(
     state.game.fen()+'\n',
-    'woodpecker-posicion-'+$('exno').textContent+'.fen'
+    'LA-ejercicio-'+curr().n+'.fen'   // % CAMBIO: nueva estructura de nombre
   );
+
+
+
+  
 
   setStatus('ok','Exporté la posición actual en formato FEN.');
 };
