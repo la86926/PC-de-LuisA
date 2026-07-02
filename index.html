@@ -4335,10 +4335,13 @@ $('b-export').onclick=()=>{
     pgn='*';
   }
 
-  descargarArchivo(
-    pgn+'\n',
-    'woodpecker-ejercicio-'+$('exno').textContent+'.pgn'
-  );
+  
+
+
+  descargarArchivo(pgn+'\n', 'LA-Ejercicio-'+curr().n+'.pgn');
+
+
+  
 
   setStatus('ok','Exporté la partida en formato PGN.');
 };
@@ -4356,10 +4359,7 @@ $('b-export-fen').onclick=()=>{
 
 
 
-  descargarArchivo(
-    state.game.fen()+'\n',
-    'LA-ejercicio-'+curr().n+'.fen'   // % CAMBIO: nueva estructura de nombre
-  );
+  descargarArchivo(state.game.fen()+'\n', 'LA-Ejercicio-'+curr().n+'.fen');
 
 
 
@@ -4512,17 +4512,7 @@ $('b-clear').onclick=()=>{
 
 
 
-// NUEVO: confirmación propia que SÍ funciona en Android/Google Sites (no usa confirm())
-// % NUEVO: aviso al frente con botón Cerrar (también cierra tocando afuera)
-function avisarVentana(mensaje){
-  $('aviso-text').textContent = mensaje;
-  $('aviso-modal').classList.add('open');
-}
-$('aviso-modal').addEventListener('click', e=>{
-  if(e.target.id==='aviso-modal' || e.target.id==='aviso-ok'){
-    $('aviso-modal').classList.remove('open');
-  }
-});
+
 
 
 
