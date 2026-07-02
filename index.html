@@ -1072,6 +1072,26 @@ footer a{color:var(--muted)}
 
 
 
+
+
+
+
+  <!-- Ventana para elegir la pieza de coronación -->
+<div id="promo-modal" class="confirm-bg">
+  <div class="confirm-box">
+    <p>¿A qué pieza coronas?</p>
+    <div style="display:flex;gap:.5rem;justify-content:center" id="promo-opts">
+      <button class="btn" data-promo="q" style="width:3.4rem;height:3.4rem;padding:.3rem"></button>
+      <button class="btn" data-promo="r" style="width:3.4rem;height:3.4rem;padding:.3rem"></button>
+      <button class="btn" data-promo="b" style="width:3.4rem;height:3.4rem;padding:.3rem"></button>
+      <button class="btn" data-promo="n" style="width:3.4rem;height:3.4rem;padding:.3rem"></button>
+    </div>
+  </div>
+</div>
+
+
+  
+
   
 
 <!-- NUEVO: modal del regalo (dedicatoria) -->
@@ -3449,11 +3469,18 @@ function tryMove(from,to){
   
   
   
-  if(state.freemode){ // exploración libre: cualquier jugada legal
+ if(state.freemode){ // exploración libre: cualquier jugada legal
+    // Si la jugada es una coronación, preguntar la pieza antes de mover
+    const esCorona=state.game.moves({square:from,verbose:true}).some(m=>m.to===to && m.promotion);
+    if(esCorona){ pedirCoronacion(from,to); return; }
     const mv=moverYRegistrar({from,to,promotion:'q'});
     if(mv){
-      if(mv.captured) sndCapture(); else sndMove();   // % NUEVO: sonido también en exploración libre
+      if(mv.captured) sndCapture(); else sndMove();
+      avisarSiMate();
 
+
+
+      
       
       // NUEVO: registro la jugada; si muevo en medio de la línea, abro variante nueva (trunco lo que había después)
       if(state.anaMoves){
@@ -3819,6 +3846,59 @@ $('b-flip').onclick=()=>{state.orient=state.orient==='w'?'b':'w';state.sinAnimac
 
 $('b-reset').onclick=()=>{const p=curr();const o=state.orient;load(p);state.orient=o;renderBoard();renderMoves();};
 
+
+
+
+
+
+
+
+
+
+
+  // Coronación en modo libre: pregunta la pieza y luego ejecuta la jugada
+function pedirCoronacion(from,to){
+  const color=state.game.turn();
+  document.querySelectorAll('#promo-opts button').forEach(b=>{
+    b.innerHTML=PIECES[color+b.dataset.promo.toUpperCase()];
+  });
+  $('promo-modal').classList.add('open');
+  $('promo-opts').onclick=e=>{
+    const b=e.target.closest('button[data-promo]');
+    if(!b) return;
+    $('promo-modal').classList.remove('open');
+    $('promo-opts').onclick=null;
+    const mv=moverYRegistrar({from,to,promotion:b.dataset.promo});
+    if(mv){
+      if(mv.captured) sndCapture(); else sndMove();
+      if(state.anaMoves){
+        state.anaMoves=state.anaMoves.slice(0,state.anaPtr);
+        state.anaMoves.push(mv);
+        state.anaPtr=state.anaMoves.length;
+      }
+      renderBoard();
+      avisarSiMate();
+    }
+  };
+}
+
+// Aviso de mate, ahogado o tablas en modo libre/importado
+function avisarSiMate(){
+  if(state.game.in_checkmate()){
+    const perdedor=state.game.turn()==='w'?'blancas':'negras';
+    const ganador=state.game.turn()==='w'?'negras':'blancas';
+    setStatus('done','¡Jaque mate! Ganan las '+ganador+' (el rey de las '+perdedor+' no tiene escape).');
+  }else if(state.game.in_stalemate()){
+    setStatus('free','Rey ahogado: la partida es tablas.');
+  }else if(state.game.in_draw()){
+    setStatus('free','Posición de tablas (material insuficiente o repetición).');
+  }
+}
+
+
+
+
+  
 // Botón Editar: entra en modo de exploración libre a mitad del ejercicio
 $('b-edit').onclick=()=>{
   if(state.freemode){
