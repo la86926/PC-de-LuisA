@@ -3177,7 +3177,9 @@ function load(p){
   
   
 mostrarBarraAnalisis(false);   // NUEVO: oculto el botón Deshacer al (re)cargar el ejercicio
+  try{ localStorage.setItem('wp_ultimo', p.n); }catch(e){}   // % NUEVO: recuerdo en qué ejercicio estoy
   renderHead(p); renderBoard(); renderMoves(); renderRef(p);
+  
   setStatus(state.freemode?'free':'idle');
 }
 
@@ -4706,16 +4708,19 @@ $('random-modal').addEventListener('click',e=>{
 /* ---------- init ---------- */
 buildList();
 if(navigator.storage && navigator.storage.persist){ navigator.storage.persist(); }
-// % NUEVO: bloqueo total de zoom por gestos (Safari/iOS ignora el meta viewport)
 document.addEventListener('gesturestart', e=>e.preventDefault());
 document.addEventListener('dblclick', e=>e.preventDefault());
-
-
-
-
-
 $('c-all').textContent = PUZZLES.length;
+// % NUEVO: retomo el último ejercicio guardado; si no hay, empiezo en el 1
+const ultimo=parseInt(localStorage.getItem('wp_ultimo'),10);
+const idxU=ultimo?state.list.findIndex(p=>p.n===ultimo):-1;
+if(idxU>=0){ state.i=idxU; }
 load(curr());
+
+
+
+
+  
 renderProgress();
 
 // expose global
