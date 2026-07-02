@@ -784,8 +784,6 @@ footer a{color:var(--muted)}
       
 
 
-      $('b-prev').onclick = ()=>go(-1);   // % CAMBIO: clic simple, sin repetición sostenida
-$('b-next').onclick = ()=>go(1);    // % CAMBIO
 
 
       
@@ -3676,8 +3674,6 @@ function holdRepeat(btn, fn){
   });
   ['pointerup','pointerleave','pointercancel'].forEach(ev=>btn.addEventListener(ev,parar));
 }
-$('b-prev').onclick = ()=>go(-1);   // % CAMBIO: clic simple, sin repetición sostenida
-$('b-next').onclick = ()=>go(1);    // % CAMBIO
 
 
 
