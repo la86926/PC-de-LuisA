@@ -3015,7 +3015,21 @@ let state={ filter:'all', list:[], i:0, game:null, fen:'', uci:[], san:[], step:
 
 
 let solved=loadSolved();
-let solvedAt=loadSolvedAt();   // NUEVO: fechas de resolución {n: timestamp}
+
+
+
+  let solvedAt=loadSolvedAt();   // NUEVO: fechas de resolución {n: timestamp}
+let histLog=loadHistLog();     // % NUEVO: lista de resoluciones [{n, t}], admite repeticiones
+function loadHistLog(){
+  try{const r=localStorage.getItem('wp_hist_log');return r?JSON.parse(r):[];}
+  catch(e){return [];}
+}
+function saveHistLog(){
+  try{localStorage.setItem('wp_hist_log',JSON.stringify(histLog));}catch(e){}
+}
+
+
+  
 let lastStreak=0;
 
 
@@ -3408,7 +3422,8 @@ function onSolved(){
   
   const p=curr();
   if(!solved.has(p.n)){solved.add(p.n);saveSolved();}
-  if(!solvedAt[p.n]){ solvedAt[p.n]=Date.now(); saveSolvedAt(); }   // NUEVO: registro fecha/hora la primera vez
+  if(!solvedAt[p.n]){ solvedAt[p.n]=Date.now(); saveSolvedAt(); }
+  histLog.unshift({n:p.n, t:Date.now()}); saveHistLog();   // % NUEVO: cada resolución (aunque se repita) entra al registro
   lastStreak++;
 
 
@@ -3575,13 +3590,14 @@ function renderRef(p){
 /* ---------- historial ---------- */
 function renderHistorial(){
   const cont=$('hist-list'); if(!cont)return;
-  const ns=Object.keys(solvedAt).map(Number);
+  const ns=histLog;                                          // % CAMBIO: ahora leo la lista con repeticiones
   if(!ns.length){ cont.innerHTML='<span class="hist-empty">Aún no has resuelto ejercicios.</span>'; return; }
-  ns.sort((a,b)=>solvedAt[b]-solvedAt[a]);   // más reciente arriba
-  const visibles = state.histTodo ? ns : ns.slice(0,20);   // % NUEVO: solo 20 salvo que se pida ver todo
+  const visibles = state.histTodo ? ns : ns.slice(0,20);     // % (ya viene ordenada: unshift pone lo nuevo arriba)
   let html='';
-  for(const n of visibles){                                 // % CAMBIO: era "of ns", ahora "of visibles"
-    const f=new Date(solvedAt[n]);
+  for(const e of visibles){                                  // % CAMBIO: cada entrada es {n, t}
+    const n=e.n;                                             // % NUEVO
+    const f=new Date(e.t);                                   // % CAMBIO: era solvedAt[n]
+  
     const fecha=f.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})
               +' · '+f.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
     html+='<div class="hist-row" data-n="'+n+'"><span class="hist-n">N.º '+n+'</span><span class="hist-d">'+fecha+'</span></div>';
@@ -4303,7 +4319,10 @@ if(b.id==='b-hist-close'){
   else if(b.id==='b-hist-reset'){
     pedirConfirmacion('¿Resetear el historial de fechas? Tu conteo de resueltos se mantiene.', ()=>{
       try{ localStorage.setItem('wp_solved_at_backup', JSON.stringify(solvedAt)); }catch(err){}
-      solvedAt={}; saveSolvedAt(); renderHistorial();
+      try{ localStorage.setItem('wp_hist_log_backup', JSON.stringify(histLog)); }catch(err){}   // % NUEVO: copia de seguridad
+      solvedAt={}; saveSolvedAt(); histLog=[]; saveHistLog(); renderHistorial();               // % CAMBIO: limpia ambos
+
+      
     });
   }
   else if(b.id==='b-hist-recover'){
