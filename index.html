@@ -3578,15 +3578,33 @@ function renderHistorial(){
   const ns=Object.keys(solvedAt).map(Number);
   if(!ns.length){ cont.innerHTML='<span class="hist-empty">Aún no has resuelto ejercicios.</span>'; return; }
   ns.sort((a,b)=>solvedAt[b]-solvedAt[a]);   // más reciente arriba
+  const visibles = state.histTodo ? ns : ns.slice(0,20);   // % NUEVO: solo 20 salvo que se pida ver todo
   let html='';
-  for(const n of ns){
+  for(const n of visibles){                                 // % CAMBIO: era "of ns", ahora "of visibles"
     const f=new Date(solvedAt[n]);
     const fecha=f.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})
               +' · '+f.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
     html+='<div class="hist-row" data-n="'+n+'"><span class="hist-n">N.º '+n+'</span><span class="hist-d">'+fecha+'</span></div>';
   }
+  // % NUEVO: botón para desplegar el resto + nota explicativa
+  if(!state.histTodo && ns.length>20){
+    html+='<button class="btn" id="b-hist-todo" style="justify-content:center;margin-top:.3rem">Mostrar todas ('+ns.length+')</button>';
+    html+='<span class="hist-empty" style="text-align:center;padding:.2rem 0">Se muestran las 20 más recientes para mantener la ventana ágil. Tu historial completo está guardado.</span>';
+  }
   cont.innerHTML=html;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ---------- progreso ---------- */
 function renderProgress(){
@@ -4266,9 +4284,22 @@ $('hist-modal').addEventListener('click', e=>{
   const b=e.target.closest('button');   // detecto qué botón se tocó (aunque toque el ícono dentro)
   if(!b) return;
 
-  if(b.id==='b-hist-close'){
+
+
+
+if(b.id==='b-hist-close'){
     $('hist-modal').classList.remove('open');
+    state.histTodo=false;   // % NUEVO: al cerrar, vuelve al modo compacto de 20
   }
+  else if(b.id==='b-hist-todo'){   // % NUEVO: despliega el historial completo
+    state.histTodo=true;
+    renderHistorial();
+  }
+  
+  
+  
+  
+  
   else if(b.id==='b-hist-reset'){
     pedirConfirmacion('¿Resetear el historial de fechas? Tu conteo de resueltos se mantiene.', ()=>{
       try{ localStorage.setItem('wp_solved_at_backup', JSON.stringify(solvedAt)); }catch(err){}
