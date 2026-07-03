@@ -429,7 +429,11 @@ gap:1rem;
 .moves .ply.now{background:var(--gold);color:#1b211e;font-weight:700}
 .moves .num{color:var(--muted2);margin-right:.15rem}
 .moves .hidden{color:var(--muted2);opacity:.45}
+.fig{display:inline-block;width:1.05em;height:1.05em;vertical-align:-0.18em}
+.fig svg{width:100%;height:100%;display:block}
 
+
+  
 /* ---------- Side panel ---------- */
 .panel-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
   padding:1rem;margin-bottom:1rem}
@@ -650,11 +654,14 @@ footer a{color:var(--muted)}
 
 
   /* Insignia de mate sobre el rey */
-.mate-badge{position:absolute;top:2%;right:2%;width:34%;height:34%;
-  background:var(--crest);border-radius:50%;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 6px #000a;z-index:5;pointer-events:none}
-.mate-badge span{color:#fff;font-size:1.05rem;line-height:1;
-  transform:rotate(90deg);display:block}
+.mate-badge{position:absolute;top:2%;right:2%;width:32%;height:32%;
+  background:#f8a5c2;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px #0008, inset 0 0 0 1.5px #ffffffcc;z-index:5;pointer-events:none}
+.mate-badge svg{width:62%;height:62%;stroke:#7d1f4d;fill:none;stroke-width:3;
+  stroke-linecap:round;stroke-linejoin:round}
+
+
+  
 
 
 
@@ -3674,10 +3681,9 @@ function setStatus(kind,msg){
 
 
 /* ---------- lista de jugadas ---------- */
-// Convierte letras inglesas en figuritas estilo lichess (glifos sólidos, forzados como texto)
+// Convierte letras inglesas en mini-piezas SVG (mismas del tablero; sin emojis de sistema)
 function figurina(san){
-  const f={K:'\u265A\uFE0E',Q:'\u265B\uFE0E',R:'\u265C\uFE0E',B:'\u265D\uFE0E',N:'\u265E\uFE0E'};
-  return san.replace(/[KQRBN]/g,m=>f[m]);
+  return san.replace(/[KQRBN]/g,m=>'<span class="fig">'+PIECES['b'+m]+'</span>');
 }
   
 function renderMoves(){
@@ -3929,7 +3935,7 @@ function marcarReyMate(){
       if(celda && !celda.querySelector('.mate-badge')){
         const ins=document.createElement('span');
         ins.className='mate-badge';
-        ins.innerHTML='<span>\u265A\uFE0E</span>';
+        ins.innerHTML='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
         celda.appendChild(ins);
       }
     }
