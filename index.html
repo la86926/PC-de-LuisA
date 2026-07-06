@@ -4006,18 +4006,14 @@ $('b-edit').onclick=()=>{
     state.sel=null;
     state.anaMoves=state.game.history({verbose:true});
     state.anaPtr=state.anaMoves.length;
-
-    mostrarBarraAnalisis(true);
-    renderBoard();
-  }else{
-    mostrarBarraAnalisis(true);
   }
 
-  // Enciende Stockfish automáticamente al entrar en Editar
+  mostrarBarraAnalisis(true);
+  renderBoard();
+
   if(!motorOn){
     if(!motor && !iniciarMotor()){
-      $('eng-line').textContent='No se pudo cargar Stockfish.';
-      setStatus('free','Modo edición activo, pero el motor no pudo iniciarse.');
+      $('eng-line').textContent='No se pudo iniciar Stockfish.';
       return;
     }
 
@@ -4025,13 +4021,10 @@ $('b-edit').onclick=()=>{
     $('b-engine').textContent='Apagar motor';
   }
 
-  $('eng-line').textContent='Analizando la posición…';
+  $('eng-line').textContent='Analizando posición…';
   analizarPosicion();
 
-  setStatus(
-    'free',
-    'Modo edición activo. La flecha dorada señala la mejor jugada.'
-  );
+  setStatus('free','Motor activo: la flecha dorada indica la mejor jugada.');
 };
 
 
@@ -5152,8 +5145,11 @@ function limpiarPremoveVisual() {
 function mostrarBarraAnalisis(visible){
   $('analysis-bar').style.display = visible ? 'flex' : 'none';
   $('engine-box').style.display = visible ? 'block' : 'none';
-  if(!visible && motorOn && motor){ motor.postMessage('stop'); }
 }
+
+
+
+  
 
 /* Motor Stockfish (se carga solo cuando el usuario lo activa) */
 let motor=null, motorOn=false, fenAnalizado='';
@@ -5205,10 +5201,34 @@ function analizarPosicion(){
   fenAnalizado=state.game.fen();
   motor.postMessage('stop');
   motor.postMessage('position fen '+fenAnalizado);
-  motor.postMessage('go depth 14');
+  
+
+  motor.postMessage('go movetime 400');
+
+  
 }
+
+
+
+  
 function leerMotor(txt){
+  if(txt.startsWith('bestmove ')){
+    const uci=txt.trim().split(/\s+/)[1];
+
+    if(uci && uci!=='(none)'){
+      dibujarFlechaMotor(uci);
+    }
+
+    return;
+  }
+
   if(txt.indexOf('info')!==0 || txt.indexOf(' pv ')<0) return;
+
+
+
+
+
+  
   const mS=txt.match(/score (cp|mate) (-?\d+)/);
   const mD=txt.match(/depth (\d+)/);
   const mP=txt.match(/ pv (.+)$/);
