@@ -773,7 +773,7 @@ footer a{color:var(--muted)}
    <!-- NUEVO: Reiniciar / Ant / Sig debajo del tablero, cerca de la mano -->
     <div style="display:flex; gap:.5rem; width:100%; max-width:560px; margin:.7rem auto 0;">
       <button class="btn" id="b-reset" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>Reiniciar</button>
-      <button class="btn" id="b-edit" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Analizar3</button>
+      <button class="btn" id="b-edit" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Analizar4</button>
       <button class="btn" id="b-prev-top" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;">◂ Ant</button>
       
       <button class="btn" id="b-next-top" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;">Sig ▸</button>
@@ -5543,24 +5543,70 @@ if(svgAnimado){
     
 
     // Oculta la pieza final mientras llega la pieza animada
-    piezaFinal.style.visibility='hidden';
-    boardEl.appendChild(piezaAnimada);
+    // Oculta la pieza definitiva hasta que la animación llegue a su destino
+piezaFinal.style.visibility='hidden';
 
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      piezaAnimada.style.transform=
-  'translate3d('+
-  (finalX-inicioX)+'px,'+
-  (finalY-inicioY)+'px,0)';
-    }));
+// Si la jugada captura una pieza, la recrea temporalmente en su casilla
+// para que desaparezca de forma gradual al llegar la pieza atacante.
+const capturada=antes.get(to);
+const piezaQueLlega=ahora.get(to);
+let piezaCapturada=null;
 
-    let terminada=false;
+if(capturada && piezaQueLlega && capturada.color!==piezaQueLlega.color){
+  piezaCapturada=document.createElement('span');
+  piezaCapturada.className='pc pc-capturada';
+  piezaCapturada.innerHTML=
+    PIECES[(capturada.color==='w'?'w':'b')+capturada.type.toUpperCase()];
 
-    const terminar=()=>{
-      if(terminada) return;
-      terminada=true;
-      piezaAnimada.remove();
-      piezaFinal.style.visibility='';
-    };
+  piezaCapturada.style.cssText=
+    'position:absolute;'+
+    'left:'+finalX+'px;'+
+    'top:'+finalY+'px;'+
+    'width:'+rp.width+'px;'+
+    'height:'+rp.height+'px;'+
+    'margin:0;'+
+    'z-index:19;'+
+    'pointer-events:none;'+
+    'opacity:1;'+
+    'transition:opacity .14s ease-out .08s;';
+
+  const svgCapturada=piezaCapturada.querySelector('svg');
+  if(svgCapturada){
+    svgCapturada.style.width='100%';
+    svgCapturada.style.height='100%';
+    svgCapturada.style.display='block';
+  }
+
+  boardEl.appendChild(piezaCapturada);
+}
+
+boardEl.appendChild(piezaAnimada);
+
+requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  piezaAnimada.style.transform=
+    'translate3d('+
+    (finalX-inicioX)+'px,'+
+    (finalY-inicioY)+'px,0)';
+
+  // La pieza capturada se desvanece cuando la atacante se acerca
+  if(piezaCapturada) piezaCapturada.style.opacity='0';
+}));
+
+let terminada=false;
+
+const terminar=()=>{
+  if(terminada) return;
+  terminada=true;
+
+  piezaAnimada.remove();
+  if(piezaCapturada) piezaCapturada.remove();
+
+  piezaFinal.style.visibility='';
+};
+
+
+
+    
 
     piezaAnimada.addEventListener('transitionend',terminar,{once:true});
     setTimeout(terminar,380);
