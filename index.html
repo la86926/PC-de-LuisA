@@ -3999,19 +3999,39 @@ function avisarSiMate(){
   
 // Botón Editar: entra en modo de exploración libre a mitad del ejercicio
 $('b-edit').onclick=()=>{
-  if(state.freemode){
-    setStatus('free','Ya estás en modo libre. Pulsa Reiniciar para volver al ejercicio.');
-    return;
+  if(!state.freemode){
+    state.freemode=true;
+    state.busy=false;
+    state.premove=null;
+    state.sel=null;
+    state.anaMoves=state.game.history({verbose:true});
+    state.anaPtr=state.anaMoves.length;
+
+    mostrarBarraAnalisis(true);
+    renderBoard();
+  }else{
+    mostrarBarraAnalisis(true);
   }
-  state.freemode=true;
-  state.busy=false;
-  state.premove=null;
-  state.sel=null;
-  state.anaMoves=state.game.history({verbose:true});
-  state.anaPtr=state.anaMoves.length;
-  mostrarBarraAnalisis(true);
-  renderBoard();
-  setStatus('free','Modo edición: mueve las piezas con libertad. Pulsa Reiniciar para volver al ejercicio.');
+
+  // Enciende Stockfish automáticamente al entrar en Editar
+  if(!motorOn){
+    if(!motor && !iniciarMotor()){
+      $('eng-line').textContent='No se pudo cargar Stockfish.';
+      setStatus('free','Modo edición activo, pero el motor no pudo iniciarse.');
+      return;
+    }
+
+    motorOn=true;
+    $('b-engine').textContent='Apagar motor';
+  }
+
+  $('eng-line').textContent='Analizando la posición…';
+  analizarPosicion();
+
+  setStatus(
+    'free',
+    'Modo edición activo. La flecha dorada señala la mejor jugada.'
+  );
 };
 
 
@@ -5137,14 +5157,49 @@ function mostrarBarraAnalisis(visible){
 
 /* Motor Stockfish (se carga solo cuando el usuario lo activa) */
 let motor=null, motorOn=false, fenAnalizado='';
-function iniciarMotor(){
+
+  
+  
+  
+  
+
+
+
+
+
+
+  function iniciarMotor(){
   try{
-    motor=new Worker('stockfish-18-lite-single.js');
+    motor=new Worker('./stockfish-18-lite-single.js');
+
     motor.onmessage=e=>leerMotor(String(e.data));
+
+    motor.onerror=()=>{
+      motorOn=false;
+      motor=null;
+      $('b-engine').textContent='Activar motor';
+      $('eng-eval').textContent='—';
+      $('eng-line').textContent=
+        'No se pudo cargar Stockfish. Verifica que stockfish-18-lite-single.js esté junto al archivo HTML.';
+    };
+
     motor.postMessage('uci');
     return true;
-  }catch(err){ motor=null; return false; }
+
+  }catch(err){
+    motor=null;
+    return false;
+  }
 }
+
+
+
+  
+
+
+
+
+  
 function analizarPosicion(){
   if(!motorOn || !motor) return;
   fenAnalizado=state.game.fen();
