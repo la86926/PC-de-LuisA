@@ -4135,6 +4135,14 @@ $('b-hint').onclick=()=>{
 let temporizadorSolucion=null;
 let reproduciendoSolucion=false;
 
+function actualizarBotonSolucion(reproduciendo){
+  const boton=$('b-sol');
+
+  boton.innerHTML=reproduciendo
+    ? '|| Pausar'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>Ver solución';
+}
+
 function detenerSolucion(){
   if(temporizadorSolucion){
     clearTimeout(temporizadorSolucion);
@@ -4143,38 +4151,44 @@ function detenerSolucion(){
 
   reproduciendoSolucion=false;
   state.busy=false;
+  actualizarBotonSolucion(false);
 }
 
-$('b-sol').onclick=()=>playSolution();
+$('b-sol').onclick=()=>{
+  // Si la solución está corriendo, este mismo botón la pausa.
+  if(reproduciendoSolucion){
+    detenerSolucion();
+    setStatus('idle','Solución pausada. Puedes continuarla con Ver solución.');
+    return;
+  }
+
+  playSolution();
+};
 
 function playSolution(){
   if(state.busy) return;
 
-// Si estabas analizando libremente, vuelve al inicio del ejercicio
-// antes de reproducir su solución oficial.
-if(state.freemode){
-  detenerSolucion();
-  state.game=new Chess(state.fen);
-  state.step=0;
-  state.freemode=false;
-  state.anaMoves=[];
-  state.anaPtr=0;
-  renderBoard();
-  renderMoves();
-}
+  // Solo reinicia la posición si entraste desde el modo Editar
+  // antes de iniciar la solución oficial.
+  if(state.freemode){
+    detenerSolucion();
 
+    state.game=new Chess(state.fen);
+    state.step=0;
+    state.freemode=false;
+    state.anaMoves=[];
+    state.anaPtr=0;
 
-
-  
-
-  detenerSolucion();
+    renderBoard();
+    renderMoves();
+  }
 
   state.busy=true;
   reproduciendoSolucion=true;
+  actualizarBotonSolucion(true);
   clearMarks();
 
   const stepThru=()=>{
-    // Si cambiaste de ejercicio o se canceló la solución, no mueve nada más.
     if(!reproduciendoSolucion) return;
 
     if(state.step>=state.uci.length){
@@ -4195,29 +4209,23 @@ if(state.freemode){
 
     const u=state.uci[state.step];
 
-const jugada=state.game.move({
-  from:u.slice(0,2),
-  to:u.slice(2,4),
-  promotion:'q'
-});
+    const jugada=state.game.move({
+      from:u.slice(0,2),
+      to:u.slice(2,4),
+      promotion:'q'
+    });
 
-// Suena solo si el usuario tiene activado Sonido.
-// Si está en Silencio, estas funciones no reproducen nada.
-if(jugada && jugada.captured){
-  sndCapture();
-}else{
-  sndMove();
-}
+    if(jugada && jugada.captured){
+      sndCapture();
+    }else{
+      sndMove();
+    }
 
-flash(u.slice(2,4),state.step%2===0?'good':'last');
+    flash(u.slice(2,4),state.step%2===0?'good':'last');
 
-state.step++;
-renderBoard();
-renderMoves();
-
-
-
-    
+    state.step++;
+    renderBoard();
+    renderMoves();
 
     temporizadorSolucion=setTimeout(stepThru,900);
   };
