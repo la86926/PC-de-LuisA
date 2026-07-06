@@ -5274,22 +5274,53 @@ function dibujarFlechaMotor(uci){
   const vieja=boardEl.querySelector('.eng-arrow');
   if(vieja) vieja.remove();
   if(!uci || !state.freemode || !motorOn) return;
+
   const pos=sq=>{
     const f='abcdefgh'.indexOf(sq[0]), r=Number(sq[1]);
-    return state.orient==='w' ? {x:f+.5, y:8-r+.5} : {x:7-f+.5, y:r-1+.5};
+    return state.orient==='w'
+      ? {x:f+.5, y:8-r+.5}
+      : {x:7-f+.5, y:r-1+.5};
   };
+
   const a=pos(uci.slice(0,2)), b=pos(uci.slice(2,4));
   const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
+
   if(!len) return;
-  const x2=b.x-(dx/len)*0.35, y2=b.y-(dy/len)*0.35;
+
+  // Deja espacio antes de la casilla final para una punta más discreta
+  const x2=b.x-(dx/len)*0.22;
+  const y2=b.y-(dy/len)*0.22;
+
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
   svg.setAttribute('viewBox','0 0 8 8');
   svg.setAttribute('class','eng-arrow');
   svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6';
-  svg.innerHTML='<defs><marker id="engHead" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 Z" fill="#d9a441"/></marker></defs>'
-    +'<line x1="'+a.x+'" y1="'+a.y+'" x2="'+x2+'" y2="'+y2+'" stroke="#d9a441" stroke-width="0.28" stroke-linecap="round" opacity="0.8" marker-end="url(#engHead)"/>';
+
+  svg.innerHTML=
+    '<defs>'+
+      '<marker id="engHead" markerWidth="0.30" markerHeight="0.30" '+
+        'refX="5.75" refY="3" viewBox="0 0 6 6" orient="auto" '+
+        'markerUnits="userSpaceOnUse">'+
+        '<path d="M0,0 L6,3 L0,6 Z" fill="#d9a441"/>'+
+      '</marker>'+
+    '</defs>'+
+    '<line x1="'+a.x+'" y1="'+a.y+'" x2="'+x2+'" y2="'+y2+'" '+
+      'stroke="#d9a441" stroke-width="0.10" stroke-linecap="round" '+
+      'opacity="0.48" marker-end="url(#engHead)"/>';
+
   boardEl.appendChild(svg);
 }
+
+  
+
+
+
+
+
+
+
+
+  
 
 $('b-engine').onclick=()=>{
 
