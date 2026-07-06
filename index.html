@@ -4167,7 +4167,12 @@ async function compartirLogro(){
     gr.addColorStop(0,'#2c352f'); gr.addColorStop(1,'#1b211e');
     ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
     // marco dorado
-    ctx.strokeStyle='#d9a441'; ctx.lineWidth=6; ctx.strokeRect(40,40,W-80,H-80);
+    
+    ctx.strokeStyle='rgba(217,164,65,.32)';
+ctx.fillStyle='rgba(217,164,65,.32)';
+ctx.lineWidth=Math.max(4, size*0.09);
+
+const headLen=Math.max(10, size*0.18);
     // contenido
     ctx.textAlign='center';
     ctx.font='120px serif'; ctx.fillText('🏆',W/2,260);
