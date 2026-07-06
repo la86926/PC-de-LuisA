@@ -773,7 +773,7 @@ footer a{color:var(--muted)}
    <!-- NUEVO: Reiniciar / Ant / Sig debajo del tablero, cerca de la mano -->
     <div style="display:flex; gap:.5rem; width:100%; max-width:560px; margin:.7rem auto 0;">
       <button class="btn" id="b-reset" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>Reiniciar</button>
-      <button class="btn" id="b-edit" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Analizar3</button>
+      <button class="btn" id="b-edit" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a4 4 0 0 0-4-4"/><path d="M9 3h6"/><path d="M12 3v7"/><path d="M8 7h8"/><path d="M7 7v3a5 5 0 0 0 10 0V7"/><path d="M17 17l3 3"/></svg>🔬 Analizar</button>
       <button class="btn" id="b-prev-top" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;">◂ Ant</button>
       
       <button class="btn" id="b-next-top" style="flex:1; justify-content:center; padding:.6rem .4rem; font-size:0.95rem; font-weight:600;">Sig ▸</button>
@@ -4048,9 +4048,62 @@ function avisarSiMate(){
 
 
 
+
+
+
+
+
+
+
+
+  function actualizarBotonEditar(analizando){
+  const boton=$('b-edit');
+
+  boton.innerHTML=analizando
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+
+        '<path d="M7 5v14M17 5v14"/>'+
+      '</svg>|| Pausar'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+
+        '<path d="M6 18h8"/>'+
+        '<path d="M3 22h18"/>'+
+        '<path d="M14 22a4 4 0 0 0-4-4"/>'+
+        '<path d="M9 3h6"/>'+
+        '<path d="M12 3v7"/>'+
+        '<path d="M8 7h8"/>'+
+        '<path d="M7 7v3a5 5 0 0 0 10 0V7"/>'+
+        '<path d="M17 17l3 3"/>'+
+      '</svg>Analizar';
+}
+
+
+
+
+
   
 // Botón Editar: entra en modo de exploración libre a mitad del ejercicio
 $('b-edit').onclick=()=>{
+
+  // Si ya está analizando, este mismo botón pausa y quita la flecha.
+  if(motorOn){
+    motorOn=false;
+
+    clearTimeout(analizarPosicion.espera);
+
+    if(motor) motor.postMessage('stop');
+
+    const flecha=boardEl.querySelector('.eng-arrow');
+    if(flecha) flecha.remove();
+
+    actualizarBotonEditar(false);
+    $('eng-line').textContent='Análisis pausado.';
+
+    return;
+  }
+
+
+
+
+  
   if(!state.freemode){
     state.freemode=true;
     state.busy=false;
@@ -4074,6 +4127,7 @@ $('b-edit').onclick=()=>{
   }
 
   motorOn=true;
+actualizarBotonEditar(true);
 }
 
 actualizarBotonMotor(true);
