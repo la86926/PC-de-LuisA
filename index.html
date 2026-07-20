@@ -920,9 +920,7 @@ footer a{color:var(--muted)}
   <button class="btn" id="b-export">Exportar PGN</button>
   <button class="btn" id="b-export-fen">Exportar FEN</button>
   <button class="btn" id="b-import">Importar PGN/FEN</button>
-  <button class="btn" id="b-clear">Borrar</button>
   <button class="btn" id="b-hist-open">Historial</button>
-  <button class="btn" id="b-tarjeta">🏆 Compartir logro</button>   <!-- % NUEVO -->
 </div>
     </div>
     
@@ -943,7 +941,7 @@ footer a{color:var(--muted)}
         <div class="ev" id="ref-ev"></div>
         <div class="tags" id="ref-tags"></div>
         <div class="note" id="ref-note" style="display:none"></div>
-        <details class="expl" id="expl"><summary>Explicación del libro 1.7c</summary>
+        <details class="expl" id="expl"><summary>Explicación del libro 2.0</summary>
           <div class="body" id="ref-full"></div>
         </details>
       </div>
@@ -4409,7 +4407,7 @@ const headLen=Math.max(5, size*0.18);
     console.error(err); setStatus('no','No pude generar la tarjeta.');
   }
 }
-$('b-tarjeta').onclick=compartirLogro;
+
 
 
 
@@ -4934,14 +4932,7 @@ $('filein').onchange=e=>{
 
 
 
-$('b-clear').onclick=()=>{
-  pedirConfirmacion('¿Borrar todo tu progreso guardado?', ()=>{   // % CAMBIO: modal propio, no confirm()
-    solved.clear();saveSolved();
-    solvedAt={};saveSolvedAt();
-    histLog=[];saveHistLog();   // % NUEVO: sin esto el historial reaparecía
-    lastStreak=0;renderProgress();
-  });
-};
+
 
 
 
