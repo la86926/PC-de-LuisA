@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PC de LA</title>
+<title>PC de L1</title>
 <link rel="icon" type="image/png" href="torre.png">
 <style>
 :root{
@@ -890,7 +890,7 @@ body.workspace-open{overflow:hidden}
   
   
   <span style="display:flex; flex-direction:column; text-align:left; line-height:1.2; min-width:0;">
-  El Método PC
+  El Método PC 1
   <small>1128 ejercicios tácticos</small>
 </span>
 
@@ -902,7 +902,7 @@ body.workspace-open{overflow:hidden}
     <button class="tab" data-v="method">Método</button>
     <button class="tab" data-v="motifs">Motivos</button>
   </nav>
-  <button class="gift-btn" id="b-gift" type="button" aria-label="Un regalo">🎁</button>
+  <button class="gift-btn" id="b-gift" type="button" aria-label="Un regalo"><img src="regalo.png" alt="Regalo" style="width:1.5rem;height:1.5rem;object-fit:contain;display:block"></button> 
 </header>
 
 
@@ -936,7 +936,7 @@ body.workspace-open{overflow:hidden}
       </div>
 
       <div class="boardhead-center">
-        <button class="engine-banner-toggle" id="b-banner" type="button" aria-pressed="false">▲ Ocultar encabezado</button>
+        <button class="engine-banner-toggle" id="b-banner" type="button" aria-pressed="false">Ocultar</button>
       </div>
 
       <div class="boardhead-right">
@@ -1127,7 +1127,7 @@ body.workspace-open{overflow:hidden}
         <div class="ev" id="ref-ev"></div>
         <div class="tags" id="ref-tags"></div>
         <div class="note" id="ref-note" style="display:none"></div>
-        <details class="expl" id="expl"><summary>Explicación del libroZ</summary>
+        <details class="expl" id="expl"><summary>Explicación del libro</summary>
           <div class="body" id="ref-full"></div>
         </details>
       </div>
@@ -1161,7 +1161,7 @@ body.workspace-open{overflow:hidden}
 <!-- ======================= MÉTODO ======================= -->
 <section class="view" id="v-method">
  <div class="reading">
-  <h1>El Método PC</h1>
+  <h1>El Método PC 1</h1>
   <p class="lead">La idea es sencilla y exigente: resolver un mismo conjunto de ejercicios una y otra vez, cada vez más rápido, hasta que el reconocimiento de patrones se vuelva automático.</p>
 
   <p>El nombre viene del PC (<em>wp</em>): golpe tras golpe sobre el mismo punto. En táctica, ese «mismo punto» son los motivos que se repiten —clavadas, horquillas, desviaciones, mates de la última fila— y la repetición deliberada es lo que los graba en la memoria.</p>
@@ -1217,7 +1217,7 @@ body.workspace-open{overflow:hidden}
 
 
 <footer>
-  Material: <em>WPMethod (Método PC)</em> · AS &amp; nss. Entrenador interactivo en español ·
+  Material: <em>WPMethod (Método PC 1)</em> · AS &amp; nss. Entrenador interactivo en español ·
   motor de legalidad <a href="https://github.com/jhlywa/chess.js">chess.js</a>. Sitio hecho por LA.
 </footer>
 
@@ -1338,7 +1338,7 @@ body.workspace-open{overflow:hidden}
 <!-- NUEVO: modal del regalo (dedicatoria) -->
 <div id="gift-modal" class="confirm-bg gift-bg">
   <div class="gift-box">
-    <span class="emoji">🎁</span>
+    <span class="emoji"><img src="regalo.png" alt="Regalo" style="width:3rem;height:3rem;object-fit:contain;display:block;margin:0 auto"></span> 
     <h3>Para un gran amigo</h3>
     <div class="gift-lema">Porque eres el mejor</div>
     <p>Creado con profundo aprecio para ti, mi buen amigo<br><span class="firma">Manuel Jesús Córdova Carhuapoma</span></p>
@@ -4627,7 +4627,7 @@ function compartirLogro(){
     }).then(function(blob){
       const archivo=new File([blob],'logro-woodpecker.png',{type:'image/png'});
       if(navigator.share && (!navigator.canShare || navigator.canShare({files:[archivo]}))){
-        return navigator.share({files:[archivo],title:'Mi progreso',text:'Mi progreso en El Método PC ♟️'});
+        return navigator.share({files:[archivo],title:'Mi progreso',text:'Mi progreso en El Método PC 1 ♟️'});
       }
       descargarBlob(blob,'logro-woodpecker.png');
       setStatus('ok','Tarjeta descargada, lista para compartir.');
@@ -5046,7 +5046,7 @@ function compartirTablero(){
     }
     const archivo=new File([blob],nombre,{type:'image/png'});
     if(navigator.share && (!navigator.canShare || navigator.canShare({files:[archivo]}))){
-      return navigator.share({files:[archivo],title:'Ejercicio '+curr().n,text:'Comparto esta posición desde El Método PC.'})
+      return navigator.share({files:[archivo],title:'Ejercicio '+curr().n,text:'Comparto esta posición desde El Método PC 1.'})
         .then(function(){setStatus('ok','Compartí la imagen del tablero.');});
     }
     descargarBlob(blob,nombre);
@@ -6466,7 +6466,7 @@ function aplicarBanner(oculto){
   const encabezado=document.querySelector('header.topbar'),boton=$('b-banner');
   if(!encabezado||!boton)return;
   encabezado.style.display=oculto?'none':'';
-  boton.textContent=oculto?'▼ Mostrar encabezado':'▲ Ocultar encabezado';
+  boton.textContent=oculto?'Mostrar':'Ocultar';
   boton.setAttribute('aria-pressed',oculto?'true':'false');
   boton.setAttribute('aria-label',oculto?'Mostrar encabezado superior':'Ocultar encabezado superior');
 }
@@ -6501,5 +6501,71 @@ $('b-banner').onclick=()=>{bannerOculto=!bannerOculto;localStorage.setItem('wp_b
 })();
 </script>
 
+<script id="pc-android-back-navigation">
+(function(){
+  function pcGoHome(){
+    try{
+      var tab=document.querySelector('#tabs .tab[data-v="train"]');
+      if(tab){ tab.click(); }
+      else{
+        var views=document.querySelectorAll('.view');
+        for(var i=0;i<views.length;i++) views[i].classList.remove('active');
+        var train=document.getElementById('v-train');
+        if(train) train.classList.add('active');
+      }
+    }catch(e){}
+    try{ window.scrollTo(0,0); }catch(e){}
+  }
+
+  function pcCloseOpenWindows(){
+    var hadOpen=false;
+    var selectors=[
+      '.workspace-bg.open',
+      '.modal-bg.open',
+      '.confirm-bg.open',
+      '.gift-bg.open',
+      '[role="dialog"].open'
+    ];
+    var nodes=document.querySelectorAll(selectors.join(','));
+    for(var i=0;i<nodes.length;i++){
+      hadOpen=true;
+      nodes[i].classList.remove('open');
+      nodes[i].setAttribute('aria-hidden','true');
+    }
+    try{ document.body.classList.remove('workspace-open'); }catch(e){}
+
+    /* Evita que la entrada temporal de Explicación quede atrapada. */
+    try{ if(typeof exHistoryActive!=='undefined') exHistoryActive=false; }catch(e){}
+    try{ if(typeof explainHistoryActive!=='undefined') explainHistoryActive=false; }catch(e){}
+    try{
+      if(history.state && (history.state.wpExplainOpen || history.state.wp2ExplainOpen)){
+        var nextState={};
+        for(var k in history.state){
+          if(k!=='wpExplainOpen' && k!=='wp2ExplainOpen') nextState[k]=history.state[k];
+        }
+        history.replaceState(nextState,'',location.href);
+      }
+    }catch(e){}
+    return hadOpen;
+  }
+
+  window.PC_ANDROID_BACK=function(){
+    pcCloseOpenWindows();
+    pcGoHome();
+    return true;
+  };
+
+  /* También permite usar Escape en computadora con el mismo resultado. */
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){
+      var open=document.querySelector('.workspace-bg.open,.modal-bg.open,.confirm-bg.open,.gift-bg.open');
+      if(open){
+        e.preventDefault();
+        window.PC_ANDROID_BACK();
+      }
+    }
+  },true);
+})();
+</script>
 </body>
 </html>
